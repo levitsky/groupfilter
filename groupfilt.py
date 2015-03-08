@@ -34,17 +34,15 @@ def groupfilter(psms, key, score, fdr, is_decoy, reverse=False, remove_decoy=Fal
         out.extend(b)
     return out
 
-def iterate(fdr_v):
+def iterate_fdr(fdr_v, psms, key, score, is_decoy, reverse=True):
     fdr_c = -1
     fdr_u = fdr_v
-    prev = fdr_u
-    next = fdr_u * 2
     while abs(fdr_c - fdr_v) >= fdr_v * 0.1:
         if fdr_v > fdr_c:
-            fdr_u = fdr_u + fdr_u / 2
+            fdr_u = fdr_u * 1.5
         else:
-            fdr_u = fdr_u - fdr_u / 2
-        grf = groupfilter(psms, key, score, fdr_u, is_decoy, reverse=True)
+            fdr_u = fdr_u / 2
+        grf = groupfilter(psms, key, score, fdr_u, is_decoy, reverse=reverse)
         fdr_c = fdr(grf, is_decoy=is_decoy, formula=2)
 
     return fdr_u
@@ -57,7 +55,7 @@ if __name__ == '__main__':
     score = lambda x: float(x['Morpheus Score'])
     is_decoy = lambda x: x['Decoy?'] == 'True' and x['Target?'] == 'False'
 
-    fdr_c = iterate(0.01)
+    fdr_c = iterate_fdr(0.01, psms, key, score, is_decoy)
     grf = groupfilter(psms, key, score, fdr_c, is_decoy, reverse=True)
 
     fdr_n = fdr(grf, is_decoy=is_decoy, formula=2)
