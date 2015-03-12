@@ -110,7 +110,7 @@ if __name__ == '__main__':
         dcr = DictReader(f, delimiter='\t')
         fieldnames = dcr.fieldnames
         psms = list(dcr)
-    key = lambda x: (int(float(x['Morpheus Score'])))
+    key = lambda x: (int(float(x['Morpheus Score'])) if x['Morpheus Score'] != 'NaN' else 0)
     score = lambda x: float(x['Morpheus Score'])
     qscore = lambda x: float(x['Q-Value (%)'])
     is_decoy = lambda x: x['Decoy?'] == 'True' and x['Target?'] == 'False'
