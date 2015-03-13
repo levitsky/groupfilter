@@ -4,6 +4,10 @@ from itertools import groupby
 from collections import defaultdict
 from sys import argv
 
+from pyteomics import fasta, parser
+enzyme = '[KR]'
+path_to_fasta = argv[2]
+
 def groupfilter(psms, key, score, fdr, is_decoy, reverse=False, remove_decoy=False):
     full_out, out, bad, gd = [], [], [], []
     ndec = 0
@@ -76,7 +80,7 @@ def write_csv_psms(out, fname, fieldnames):
 
 
 def write_csv_proteins(out, fname): #TODO
-    fieldnames = ['protein', 'Q-Value (%)']
+    fieldnames = ['protein', 'Q-Value (%)', 'score']
     out.sort(key=lambda x: x[1])
     with open(fname, 'w') as f:
         csvwriter = writer(f, delimiter='\t')
@@ -123,18 +127,46 @@ if __name__ == '__main__':
         if psm['Base Peptide Sequence'] in seq_added and float(psm['Morpheus Score']) == seq_added[psm['Base Peptide Sequence']]:
             # seq_added.add(psm['Base Peptide Sequence'])
             peptides.append(psm)
+
+    filt(psms, key, score, qscore, is_decoy, fname=oname + '.PSMs.tsv', fieldnames=fieldnames)
     fpeptides = filt(peptides, key, score, qscore, is_decoy, fname=oname + '.unique_peptides.tsv', fieldnames=fieldnames)
 
     prot_score = lambda x: x[1]
     prot_is_decoy = lambda x: 'DECOY_' in x[0]
     prots = defaultdict(float)
+    prots_pep = defaultdict(set)
+    pept_scores = dict()
     for psm in fpeptides:
-        prots[psm['Protein Description']] += float(psm['Morpheus Score'])
+        pept_scores[psm['Base Peptide Sequence'].replace('I', 'L')] = float(psm['Morpheus Score'])
+        # prots[psm['Protein Description']] = 0
+    for prot in fasta.read(path_to_fasta):
+        # if prot[0] in prots:
+        for pep in parser.cleave(prot[1].replace('I', 'L'), enzyme, 2) | parser.cleave(prot[1].replace('I', 'L')[1:], enzyme, 2):
+            if pep in pept_scores:
+                prots_pep[prot[0]].add(pep)
+    pkeys = prots_pep.keys()
+    idx_banned = set()
+    for k, v in prots_pep.items():
+        for k2, v2 in prots_pep.items():
+            if k != k2 and prots_pep[k].issubset(prots_pep[k2]):
+                del prots_pep[k]
+                break
+    for k in prots_pep:
+        prots[k] = 0
+    # for idx in range(len(pkeys) - 1):
+    #     if not any(prots_pep[pkeys[idx]].issubset(prots_pep[pkeys[idx2]]) for idx2 in range(len(pkeys) - 1) if idx!=idx2):
+    #         prots[pkeys[idx]] = 0
+    for prot in prots:
+        for pep in prots_pep[prot]:
+            prots[prot] += pept_scores.get(pep, 0)
+                # prots[prot[0]] += pept_scores.get(pep, 0)
+    # for psm in peptides:
+    #     prots[psm['Protein Description']] += float(psm['Morpheus Score'])
     prots = sorted(prots.items(), key=prot_score, reverse=True)
     q_v = qvalues(prots, key=prot_score, is_decoy=prot_is_decoy, reverse=True, remove_decoy=False, formula=1)
     prots_q = []
     for idx, z in enumerate(prots):
-        prots_q.append((z[0], q_v[idx][-1] * 100))
+        prots_q.append((z[0], q_v[idx][-1] * 100, q_v[idx]['score']))
     prots_fil = filter(prots_q, fdr=0.01, key=prot_score, reverse=False, is_decoy=prot_is_decoy, remove_decoy=False, correction=0, formula=1)
     write_csv_proteins(prots_q, fname=oname + '.protein_groups.tsv')
     print len(prots_fil)
