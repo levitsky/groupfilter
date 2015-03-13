@@ -115,13 +115,12 @@ if __name__ == '__main__':
     qscore = lambda x: float(x['Q-Value (%)'])
     is_decoy = lambda x: x['Decoy?'] == 'True' and x['Target?'] == 'False'
 
-    filt(psms, key, score, qscore, is_decoy, fname=oname + '.PSMs.tsv', fieldnames=fieldnames)
     seq_added = dict()
     peptides = []
     for psm in psms:
-        seq_added[psm['Base Peptide Sequence']] = max(psm['Morpheus Score'], seq_added.get(psm['Base Peptide Sequence'], 0))
+        seq_added[psm['Base Peptide Sequence']] = max(float(psm['Morpheus Score']), seq_added.get(psm['Base Peptide Sequence'], 0))
     for psm in psms:
-        if psm['Base Peptide Sequence'] in seq_added and psm['Morpheus Score'] == seq_added[psm['Base Peptide Sequence']]:
+        if psm['Base Peptide Sequence'] in seq_added and float(psm['Morpheus Score']) == seq_added[psm['Base Peptide Sequence']]:
             # seq_added.add(psm['Base Peptide Sequence'])
             peptides.append(psm)
     fpeptides = filt(peptides, key, score, qscore, is_decoy, fname=oname + '.unique_peptides.tsv', fieldnames=fieldnames)
