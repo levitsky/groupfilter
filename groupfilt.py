@@ -25,22 +25,12 @@ def groupfilter(psms, key, score, fdr, is_decoy, reverse=False, remove_decoy=Fal
                     reverse=reverse, remove_decoy=remove_decoy, correction=1, formula=1)
             if len(goodl) == len(g):
                 gd.extend(g)
-            elif len(goodl):
+            else:
                 q_v = qvalues(g, key=score, is_decoy=is_decoy, reverse=True, remove_decoy=False, formula=1, correction=1)
                 for idx, z in enumerate(g):
                     z['Q-Value (%)'] = q_v[idx][-1] * 100
                 full_out.extend(g)
                 out.extend(goodl)
-            elif not goodl:
-                bad.extend(g)
-    if bad:
-        b = filter(bad, key=score, fdr=fdr, is_decoy=is_decoy, reverse=reverse,
-                remove_decoy=remove_decoy, correction=1, formula=1)
-        q_v = qvalues(bad, key=score, is_decoy=is_decoy, reverse=True, remove_decoy=False, formula=1, correction=1)
-        for idx, z in enumerate(bad):
-            z['Q-Value (%)'] = q_v[idx][-1] * 100
-        full_out.extend(bad)
-        out.extend(b)
     if gd:
         q_v = qvalues(gd, key=score, is_decoy=is_decoy, reverse=True, remove_decoy=False, formula=1, correction=1)
         for idx, z in enumerate(gd):
@@ -73,7 +63,7 @@ def iterate_fdr(fdr_v, psms, key, score, is_decoy, reverse=True):
 def write_csv_psms(out, fname, fieldnames):
     out.sort(key=lambda x: x['Q-Value (%)'])
     with open(fname, 'w') as f:
-        csvwriter = DictWriter(f, fieldnames=fieldnames, delimiter='\t')#, extrasaction='ignore')
+        csvwriter = DictWriter(f, fieldnames=fieldnames, delimiter='\t'))
         csvwriter.writerow(dict((fn, fn) for fn in fieldnames))
         for psm in out:
             csvwriter.writerow(psm)
@@ -84,8 +74,6 @@ def write_csv_proteins(out, fname): #TODO
     out.sort(key=lambda x: x[1])
     with open(fname, 'w') as f:
         csvwriter = writer(f, delimiter='\t')
-        # csvwriter = DictWriter(f, fieldnames=fieldnames, delimiter='\t')#, extrasaction='ignore')
-        # csvwriter.writerow(dict((fn, fn) for fn in fieldnames))
         csvwriter.writerow(fieldnames)
         for prot in out:
             csvwriter.writerow(prot)
@@ -125,7 +113,6 @@ if __name__ == '__main__':
         seq_added[psm['Base Peptide Sequence']] = max(float(psm['Morpheus Score']), seq_added.get(psm['Base Peptide Sequence'], 0))
     for psm in psms:
         if psm['Base Peptide Sequence'] in seq_added and float(psm['Morpheus Score']) == seq_added[psm['Base Peptide Sequence']]:
-            # seq_added.add(psm['Base Peptide Sequence'])
             peptides.append(psm)
 
     filt(psms, key, score, qscore, is_decoy, fname=oname + '.PSMs.tsv', fieldnames=fieldnames)
@@ -138,9 +125,7 @@ if __name__ == '__main__':
     pept_scores = dict()
     for psm in fpeptides:
         pept_scores[psm['Base Peptide Sequence'].replace('I', 'L')] = float(psm['Morpheus Score'])
-        # prots[psm['Protein Description']] = 0
     for prot in fasta.read(path_to_fasta):
-        # if prot[0] in prots:
         for pep in parser.cleave(prot[1].replace('I', 'L'), enzyme, 2) | parser.cleave(prot[1].replace('I', 'L')[1:], enzyme, 2):
             if pep in pept_scores:
                 prots_pep[prot[0]].add(pep)
@@ -153,15 +138,9 @@ if __name__ == '__main__':
                 break
     for k in prots_pep:
         prots[k] = 0
-    # for idx in range(len(pkeys) - 1):
-    #     if not any(prots_pep[pkeys[idx]].issubset(prots_pep[pkeys[idx2]]) for idx2 in range(len(pkeys) - 1) if idx!=idx2):
-    #         prots[pkeys[idx]] = 0
     for prot in prots:
         for pep in prots_pep[prot]:
             prots[prot] += pept_scores.get(pep, 0)
-                # prots[prot[0]] += pept_scores.get(pep, 0)
-    # for psm in peptides:
-    #     prots[psm['Protein Description']] += float(psm['Morpheus Score'])
     prots = sorted(prots.items(), key=prot_score, reverse=True)
     q_v = qvalues(prots, key=prot_score, is_decoy=prot_is_decoy, reverse=True, remove_decoy=False, formula=1)
     prots_q = []
