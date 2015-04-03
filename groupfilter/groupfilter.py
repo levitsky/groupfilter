@@ -24,14 +24,11 @@ def groupfilter(psms, key, score, fdr, is_decoy, reverse=False, remove_decoy=Fal
         if not flag and not all(is_decoy(x) for x in g):
             goodl = filter(g, key=score, fdr=fdr, is_decoy=is_decoy,
                     reverse=reverse, remove_decoy=remove_decoy, correction=1, formula=1)
-            if len(goodl) == len(g):
-                gd.extend(g)
-            else:
-                q_v = qvalues(g, key=score, is_decoy=is_decoy, reverse=True, remove_decoy=False, formula=1, correction=1)
-                for idx, z in enumerate(g):
-                    z['Q-Value (%)'] = q_v[idx][-1] * 100
-                full_out.extend(g)
-                out.extend(goodl)
+            q_v = qvalues(g, key=score, is_decoy=is_decoy, reverse=True, remove_decoy=False, formula=1, correction=1)
+            for idx, z in enumerate(g):
+                z['Q-Value (%)'] = q_v[idx][-1] * 100
+            full_out.extend(g)
+            out.extend(goodl)
     if gd:
         q_v = qvalues(gd, key=score, is_decoy=is_decoy, reverse=True, remove_decoy=False, formula=1, correction=1)
         for idx, z in enumerate(gd):
