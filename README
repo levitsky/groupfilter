@@ -1,5 +1,5 @@
 groupfilter - a software tool for efficient filtering of Morpheus search engine results
-–--------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------
 
 **groupfilter** is a module based on the
 **pyteomics** (http://pythonhosted.org/pyteomics/) package that
