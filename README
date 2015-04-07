@@ -22,14 +22,12 @@ How to install
 
 How to use
 --------------
-usage: groupfilter.py [-h] [files [files ...]] fasta
+
+``groupfilter.py file1.tsv [file2.tsv ...] db.fasta``
 
 positional arguments:
-  files       list of Morpheus PSMs files
-  fasta       path to fasta file
-
-optional arguments:
-  -h, --help  show help message
+  files       list of Morpheus PSM files
+  db.fasta       path to FASTA file
 
 Links
 -----
