@@ -27,6 +27,7 @@ How to use
 
 positional arguments:
   files       list of Morpheus PSM files
+
   db.fasta       path to FASTA file
 
 Links
