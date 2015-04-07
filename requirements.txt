@@ -1,2 +1,2 @@
-pyteomics>=3
+pyteomics (>=3.0.0)
 numpy
