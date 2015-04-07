@@ -1,15 +1,24 @@
-groupfilter - a software tool for efficient filtering of Morpheus search engine results.
----------------------------------------------------------------
+groupfilter - a software tool for efficient filtering of Morpheus search engine results
+---------------------------------------------------------------------------------------
 
 **groupfilter** is a module based on the
-`pyteomics <http://pythonhosted.org/pyteomics/>`_ package that
-increases the number identifications for Morpheus search engine results.
+**pyteomics** (http://pythonhosted.org/pyteomics/) package that
+increases the number of identifications above FDR threshold for Morpheus search engine results.
 
 Dependencies
 ------------
 
 - pyteomics
 - numpy
+
+How to install
+--------------
+
+ - best way to install **groupfilter** is with ``pip``: ``pip install numpy
+   pyteomics groupfilter``.
+ - alternatively, you can download source code for each library and run
+   ``python setup.py install`` for each of them.
+ - There may be other ways to install ``numpy``, depending on your platform.
 
 Links
 -----
