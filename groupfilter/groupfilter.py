@@ -15,7 +15,7 @@ class MyParser(argparse.ArgumentParser):
         sys.exit(2)
 
 mparser=MyParser()
-mparser.add_argument('files', nargs='*', help='list of Morpheus PSMs files')
+mparser.add_argument('files', nargs='+', help='list of Morpheus PSMs files')
 mparser.add_argument('fasta', help='path to fasta file')
 args = mparser.parse_args()
 
