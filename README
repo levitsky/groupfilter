@@ -8,7 +8,7 @@ increases the number of identifications above FDR threshold for Morpheus search 
 Dependencies
 ------------
 
-- pyteomics
+- pyteomics (>= 3.0)
 - numpy
 
 How to install
@@ -19,6 +19,15 @@ How to install
  - alternatively, you can download source code for each library and run
    ``python setup.py install`` for each of them.
  - There may be other ways to install ``numpy``, depending on your platform.
+
+How to use
+--------------
+
+``groupfilter.py file1.tsv [file2.tsv ...] db.fasta``
+
+positional arguments:
+  files       list of Morpheus PSM files
+  db.fasta       path to FASTA file
 
 Links
 -----
