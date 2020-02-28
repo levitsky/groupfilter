@@ -2,7 +2,7 @@ groupfilter - a software tool for efficient filtering of Morpheus search engine 
 ---------------------------------------------------------------------------------------
 
 **groupfilter** is a module based on the
-**pyteomics** (http://pythonhosted.org/pyteomics/) package that
+**pyteomics** (https://pyteomics.readthedocs.io/) package that
 increases the number of identifications above FDR threshold for Morpheus search engine results.
 
 Dependencies
@@ -34,5 +34,5 @@ Links
 -----
 
 - PyPI: https://pypi.python.org/pypi/groupfilter
-- BitBucket repo & issue tracker: https://bitbucket.org/levitsky/groupfilter
+- BitBucket repo & issue tracker: https://github.com/levitsky/groupfilter
 - Mailing list: pyteomics@googlegroups.com
